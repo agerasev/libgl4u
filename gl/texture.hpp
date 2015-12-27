@@ -22,9 +22,48 @@ public:
 
 private:
 	GLuint _id = 0;
-	int _width = 0, _height = 0;
+	int _bounds[3] = {0, 0, 0};
 	Format _format = RGB;
 	Type _type = UBYTE;
+	int _dim = 2;
+	
+	void gl_formats(GLuint &ifmt, GLuint &fmt, GLuint &type) const {
+		switch(_format) {
+		case RGB:
+			fmt = GL_RGB;
+			break;
+		case RGBA:
+			fmt = GL_RGBA;
+			break;
+		}
+		switch(_type) {
+		case UBYTE:
+			type = GL_UNSIGNED_BYTE;
+			ifmt = fmt;
+			break;
+		case FLOAT:
+			type = GL_FLOAT;
+			ifmt = (_format == RGB) ? GL_RGB32F : GL_RGBA32F;
+			break;
+		}
+	}
+	
+	static GLuint target(int dim) {
+		switch(dim) {
+		case 1:
+			return GL_TEXTURE_1D;
+		case 2:
+			return GL_TEXTURE_2D;
+		case 3:
+			return GL_TEXTURE_3D;
+		default:
+			return 0;
+		}
+	}
+	
+	GLuint target() const {
+		return target(_dim);
+	}
 	
 public:
 	Texture() {
@@ -36,57 +75,53 @@ public:
 	}
 	
 	void bind() const {
-		glBindTexture(GL_TEXTURE_2D, _id);
+		glBindTexture(target(), _id);
 	}
-	static void unbind() {
-		glBindTexture(GL_TEXTURE_2D, 0);
+	void unbind() const {
+		glBindTexture(target(), 0);
+	}
+	static void unbind(int dim) {
+		glBindTexture(target(dim), 0);
 	}
 	
-	void loadData(const void *data, int width, int height, Format format, Type type, Interpolation inp = LINEAR) {
+	void loadData(int dim, const void *data, int bounds[], Format format, Type type, Interpolation inp = LINEAR) {
+		_dim = dim;
 		bind();
 		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		for(int i = 0; i < dim; ++i)
+			_bounds[i] = bounds[i];
+		
+		glTexParameteri(target(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		if(dim >= 2)
+			glTexParameteri(target(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		if(dim >= 3)
+			glTexParameteri(target(), GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		
+		glTexParameteri(target(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		setInterpolation(inp);
 		
-		GLuint ifmt;
-		GLuint fmt, t;
-		switch(format) {
-		case RGB:
-			fmt = GL_RGB;
-			break;
-		case RGBA:
-			fmt = GL_RGBA;
-			break;
-		}
-		switch(type) {
-		case UBYTE:
-			t = GL_UNSIGNED_BYTE;
-			ifmt = fmt;
-			break;
-		case FLOAT:
-			t = GL_FLOAT;
-			ifmt = (format == RGB) ? GL_RGB32F : GL_RGBA32F;
-			break;
-		}
-		
-		glTexImage2D(GL_TEXTURE_2D, 0, ifmt, width, height, 0, fmt, t, data);
-		
-		_width = width;
-		_height = height;
 		_format = format;
 		_type = type;
+		GLuint ifmt, fmt, t;
+		gl_formats(ifmt, fmt, t);
+		
+		if(dim == 1) {
+			glTexImage1D(GL_TEXTURE_1D, 0, ifmt, bounds[0], 0, fmt, t, data);
+		} else if(dim == 2) {
+			glTexImage2D(GL_TEXTURE_2D, 0, ifmt, bounds[0], bounds[1], 0, fmt, t, data);
+		} else if(dim == 3) {
+			glTexImage3D(GL_TEXTURE_3D, 0, ifmt, bounds[0], bounds[1], bounds[2], 0, fmt, t, data);
+		}
 	}
 	
 	void setInterpolation(Interpolation inp) const {
 		bind();
 		switch(inp) {
 		case LINEAR:
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(target(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
 		case NEAREST:
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(target(), GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			break;
 		}
 	}
@@ -94,11 +129,11 @@ public:
 	GLuint id() const {
 		return _id;
 	}
-	int width() const {
-		return _width;
+	int dim() const {
+		return _dim;
 	}
-	int height() const {
-		return _height;
+	const int *bounds() const {
+		return _bounds;
 	}
 	Type type() const {
 		return _type;

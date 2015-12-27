@@ -57,6 +57,8 @@ public:
 	}
 	
 	void attach(Shader *s) throw(Exception) {
+		if(s == nullptr)
+			throw Exception("shader is null");
 		_shaders.push_back(s);
 		_updateVariables();
 		glAttachShader(_id, s->id());
@@ -208,13 +210,13 @@ private:
 			case Variable::MATRIX:
 				switch(var.dim) {
 				case 2:
-					glUniformMatrix2fv(var.id, 1, GL_FALSE, var.fdata);
+					glUniformMatrix2fv(var.id, 1, GL_TRUE, var.fdata);
 					break;
 				case 3:
-					glUniformMatrix3fv(var.id, 1, GL_FALSE, var.fdata);
+					glUniformMatrix3fv(var.id, 1, GL_TRUE, var.fdata);
 					break;
 				case 4:
-					glUniformMatrix4fv(var.id, 1, GL_FALSE, var.fdata);
+					glUniformMatrix4fv(var.id, 1, GL_TRUE, var.fdata);
 					break;
 				break;
 				}

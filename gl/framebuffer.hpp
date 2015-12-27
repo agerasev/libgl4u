@@ -26,7 +26,8 @@ public:
 		
 		bind();
 		
-		_tex.loadData(nullptr, width, height, Texture::RGBA, Texture::FLOAT);
+		int bs[2] = {width, height};
+		_tex.loadData(2, nullptr, bs, Texture::RGBA, Texture::FLOAT);
 		
 		if(GLEW_VERSION_3_2)
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _tex.id(), 0);

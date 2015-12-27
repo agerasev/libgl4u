@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <cstring>
 
 #include <list>
@@ -161,13 +162,13 @@ private:
 		for(auto i = _attribs.begin(); i != _attribs.end(); ++i) {
 			GLint loc = glGetAttribLocation(_id, i->first.c_str());
 			if(loc == -1)
-				throw Exception("Attrib '" + i->first + "' location error");
+				fprintf(stderr, "%s\n", ("Attrib '" + i->first + "' location error").c_str());
 			i->second.id = loc;
 		}
 		for(auto i = _uniforms.begin(); i != _uniforms.end(); ++i) {
 			GLint loc = glGetUniformLocation(_id, i->first.c_str());
 			if(loc == -1)
-				throw Exception("Uniform '" + i->first + "' location error");
+				fprintf(stderr, "%s\n", ("Uniform '" + i->first + "' location error").c_str());
 			i->second.id = loc;
 		}
 	}
@@ -304,17 +305,21 @@ public:
 		if(iter == _attribs.end())
 			throw Exception("No such attribute '" + name + "'");
 		AttribVariable &var = iter->second;
+		if(var.id == -1)
+			throw Exception("Attribute '" + name + "' location error");
 		if(var.type != buf->type())
 			throw Exception("Attribute '" + name + "' type mismatch");
 		var.buffer = buf;
 	}
 	
 	template <typename T>
-	void setUniform(const std::string &name, T *data, long len) throw(Exception) {
+	void setUniform(const std::string &name, const T *data, long len) throw(Exception) {
 		auto iter = _uniforms.find(name);
 		if(iter == _uniforms.end())
 			throw Exception("No such uniform '" + name + "'");
 		UniformVariable &var = iter->second;
+		if(var.id == -1)
+			throw Exception("Uniform '" + name + "' location error");
 		switch(var.kind) {
 		case Variable::SCALAR:
 			if(len != 1)

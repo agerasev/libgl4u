@@ -29,7 +29,7 @@ public:
 	}
 	
 	template <typename T>
-	void loadData(T *data, long size) {
+	void loadData(const T *data, long size) {
 		bind();
 		_size = size;
 		_type = get_type<T>::value;

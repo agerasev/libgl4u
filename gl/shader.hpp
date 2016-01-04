@@ -13,8 +13,8 @@ namespace gl {
 class Shader {
 public:
 	enum Type {
-		VERTEX,
-		FRAGMENT
+		VERTEX = GL_VERTEX_SHADER,
+		FRAGMENT = GL_FRAGMENT_SHADER
 	};
 	struct Variable {
 		std::string type;
@@ -23,26 +23,16 @@ public:
 	
 private:
 	GLuint _id = 0;
+	Type _type;
 	std::string _name = "";
 	std::list<Variable> _attribs, _uniforms;
 	
 public:
-	Shader(Shader::Type type)
-	{
-		GLuint t;
-		switch(type) {
-		case VERTEX:
-			t = GL_VERTEX_SHADER;
-			break;
-		case FRAGMENT:
-			t = GL_FRAGMENT_SHADER;
-			break;
-		}
-
-		_id = glCreateShader(t);
+	Shader(Shader::Type type) {
+		_type = type;
+		_id = glCreateShader((GLuint)type);
 	}
-	~Shader()
-	{
+	~Shader() {
 		glDeleteShader(_id);
 	}
 	
@@ -108,16 +98,18 @@ private:
 		std::string string;
 		std::smatch match;
 		std::regex expr;
-	
-		string = std::string(source);
-		expr = "(^|\n)[ \t]*attribute[ \t\n]*([^ \t\n]*)[ \t\n]*([^ \t\n;]*)[ \t\n]*;";
-		while(std::regex_search(string, match, expr))
-		{
-			Variable var;
-			var.name = match[3];
-			var.type = match[2];
-			_attribs.push_back(var);
-			string = match.suffix().str();
+		
+		if(_type == VERTEX) {
+			string = std::string(source);
+			expr = "(^|\n)[ \t]*in[ \t\n]*([^ \t\n]*)[ \t\n]*([^ \t\n;]*)[ \t\n]*;";
+			while(std::regex_search(string, match, expr))
+			{
+				Variable var;
+				var.name = match[3];
+				var.type = match[2];
+				_attribs.push_back(var);
+				string = match.suffix().str();
+			}
 		}
 		
 		string = std::string(source);

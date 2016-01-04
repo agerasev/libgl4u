@@ -306,7 +306,7 @@ public:
 			throw Exception("No such attribute '" + name + "'");
 		AttribVariable &var = iter->second;
 		if(var.id == -1)
-			throw Exception("Attribute '" + name + "' location error");
+			return;//throw Exception("Attribute '" + name + "' location error");
 		if(var.type != buf->type())
 			throw Exception("Attribute '" + name + "' type mismatch");
 		var.buffer = buf;
@@ -319,7 +319,7 @@ public:
 			throw Exception("No such uniform '" + name + "'");
 		UniformVariable &var = iter->second;
 		if(var.id == -1)
-			throw Exception("Uniform '" + name + "' location error");
+			return;//throw Exception("Uniform '" + name + "' location error");
 		switch(var.kind) {
 		case Variable::SCALAR:
 			if(len != 1)
@@ -358,6 +358,8 @@ public:
 		if(iter == _uniforms.end())
 			throw Exception("No such uniform '" + name + "'");
 		UniformVariable &var = iter->second;
+		if(var.id == -1)
+			return;//throw Exception("Uniform '" + name + "' location error");
 		if(var.kind != Variable::SAMPLER)
 			throw Exception("Uniform '" + name + "' is not sampler");
 		var.tex = tex;

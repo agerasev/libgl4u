@@ -3,6 +3,8 @@
 #include <string>
 #include <exception>
 
+#include <GL/glew.h>
+
 namespace gl {
 class Exception : public std::exception {
 private:
@@ -18,6 +20,40 @@ public:
 	}
 	std::string getMessage() const {
 		return msg;
+	}
+};
+
+class ErrorException : public Exception {
+private:
+	GLenum code;
+	std::string info;
+public:
+	static std::string code_to_string(GLenum code) {
+		switch(code) {
+		case GL_NO_ERROR:
+			return "GL_NO_ERROR";
+		case GL_INVALID_ENUM:
+			return "GL_INVALID_ENUM";
+		case GL_INVALID_VALUE:
+			return "GL_INVALID_VALUE";
+		case GL_INVALID_OPERATION:
+			return "GL_INVALID_OPERATION";
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			return "GL_INVALID_FRAMEBUFFER_OPERATION";
+		case GL_OUT_OF_MEMORY:
+			return "GL_OUT_OF_MEMORY";
+		default:
+			return "UNKNOWN_ERROR";
+		}
+	}
+	ErrorException(GLenum error_code, const std::string &error_info = "")
+	  : Exception(code_to_string(error_code) + " : " + error_info), 
+	    code(error_code), info(error_info) {}
+	GLenum getCode() const {
+		return code;
+	}
+	std::string getInfo() const {
+		return info;
 	}
 };
 

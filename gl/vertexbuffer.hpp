@@ -29,12 +29,15 @@ public:
 	}
 	
 	template <typename T>
-	void loadData(const T *data, long size) {
+	void loadData(const T *data, long size) throw(ErrorException) {
+		GLenum error;
 		bind();
 		_size = size;
 		_type = get_type<T>::value;
 		glBufferData(GL_ARRAY_BUFFER, size*sizeof(T), data, GL_STATIC_DRAW);
 		unbind();
+		if((error = glGetError()) != GL_NO_ERROR)
+			throw ErrorException(error);
 	}
 	
 	void draw() {

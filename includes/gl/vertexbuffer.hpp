@@ -1,10 +1,9 @@
 #pragma once
 
-#include <type_traits>
-
 #include <GL/glew.h>
 
-#include "type.hpp"
+#include <gl/exception.hpp>
+#include <gl/type.hpp>
 
 namespace gl {
 class VertexBuffer {
@@ -14,19 +13,11 @@ private:
 	long _size;
 	Type _type;
 public:
-	VertexBuffer() {
-		glGenBuffers(1, &_id);
-	}
-	~VertexBuffer() {
-		glDeleteBuffers(1, &_id);
-	}
+	VertexBuffer();
+	~VertexBuffer();
 	
-	void bind() {
-		glBindBuffer(GL_ARRAY_BUFFER, _id);
-	}
-	static void unbind() {
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
+	void bind();
+	static void unbind();
 	
 	template <typename T>
 	void loadData(const T *data, long size) throw(ErrorException) {
@@ -40,18 +31,10 @@ public:
 			throw ErrorException(error);
 	}
 	
-	void draw() {
-		glDrawArrays(GL_TRIANGLES, 0, _size);
-	}
+	void draw();
 	
-	GLuint id() const {
-		return _id;
-	}
-	long size() const {
-		return _size;
-	}
-	Type type() {
-		return _type;
-	}
+	GLuint id() const;
+	long size() const;
+	Type type();
 };
 }

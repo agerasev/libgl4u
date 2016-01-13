@@ -2,8 +2,6 @@
 
 #include <type_traits>
 
-#include "exception.hpp"
-
 #include <GL/glew.h>
 
 namespace gl {

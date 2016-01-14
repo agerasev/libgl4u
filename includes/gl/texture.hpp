@@ -77,8 +77,8 @@ public:
 
 private:
 	GLuint _id = 0;
-	int _bounds[3] = {0, 0, 0};
-	InternalFormat _in_format = RGB8;
+	int _size[3] = {0, 0, 0};
+	InternalFormat _format = RGBA8;
 	int _dim = 2;
 	
 	static GLuint target(int dim);
@@ -92,14 +92,14 @@ public:
 	void unbind() const;
 	static void unbind(int dim);
 	
-	void loadData(int dim, const void *data, const int bounds[], InternalFormat ifmt, Format fmt, Type type, Interpolation intp = LINEAR) throw(ErrorException);
-	void loadSubData(const void *data, const int offset[], const int sub_size[], Format fmt, Type type) throw(ErrorException);
+	void init(int dim, const int size[], InternalFormat ifmt, int level = 0) throw(ErrorException);
+	void write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level = 0) throw(ErrorException);
 	
 	void setInterpolation(Interpolation intp) const;
 
 	GLuint id() const;
 	int dim() const;
-	const int *bounds() const;
+	const int *size() const;
 	Texture::InternalFormat internal_format() const;
 };
 }

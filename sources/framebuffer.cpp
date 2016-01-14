@@ -15,8 +15,9 @@ void FrameBuffer::setSize(int width, int height) throw(Exception) {
 	
 	bind();
 	
-	int bs[2] = {width, height};
-	_tex.loadData(2, nullptr, bs, Texture::RGBA32F, Texture::RGBA, Texture::FLOAT);
+	int s[2] = {width, height};
+	_tex.init(2, s, Texture::RGBA32F);
+	_tex.setInterpolation(Texture::LINEAR);
 	
 	if(GLEW_VERSION_3_2)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _tex.id(), 0);

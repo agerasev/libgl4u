@@ -35,14 +35,14 @@ void Texture::unbind(int dim) {
 	glBindTexture(target(dim), 0);
 }
 
-void Texture::loadData(int dim, const void *data, const int bounds[], InternalFormat ifmt, Format fmt, Type type, Interpolation intp) throw(ErrorException) {
+void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) throw(ErrorException) {
 	GLenum error;
 	
 	_dim = dim;
 	bind();
 	
 	for(int i = 0; i < dim; ++i)
-		_bounds[i] = bounds[i];
+		_size[i] = size[i];
 	
 	glTexParameteri(target(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	if(dim >= 2)
@@ -50,16 +50,14 @@ void Texture::loadData(int dim, const void *data, const int bounds[], InternalFo
 	if(dim >= 3)
 		glTexParameteri(target(), GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	
-	setInterpolation(intp);
-	
-	_in_format = ifmt;
+	_format = ifmt;
 	
 	if(dim == 1) {
-		glTexImage1D(GL_TEXTURE_1D, 0, (GLuint)ifmt, bounds[0], 0, (GLuint)fmt, (GLuint)type, data);
+		glTexImage1D(GL_TEXTURE_1D, level, (GLuint)ifmt, size[0], 0, (GLenum)RGBA, (GLenum)UBYTE, NULL);
 	} else if(dim == 2) {
-		glTexImage2D(GL_TEXTURE_2D, 0, (GLuint)ifmt, bounds[0], bounds[1], 0, (GLuint)fmt, (GLuint)type, data);
+		glTexImage2D(GL_TEXTURE_2D, level, (GLuint)ifmt, size[0], size[1], 0, (GLenum)RGBA, (GLenum)UBYTE, NULL);
 	} else if(dim == 3) {
-		glTexImage3D(GL_TEXTURE_3D, 0, (GLuint)ifmt, bounds[0], bounds[1], bounds[2], 0, (GLuint)fmt, (GLuint)type, data);
+		glTexImage3D(GL_TEXTURE_3D, level, (GLuint)ifmt, size[0], size[1], size[2], 0, (GLenum)RGBA, (GLenum)UBYTE, NULL);
 	}
 	
 	error = glGetError();
@@ -67,16 +65,16 @@ void Texture::loadData(int dim, const void *data, const int bounds[], InternalFo
 		throw ErrorException(error);
 }
 
-void Texture::loadSubData(const void *data, const int offset[], const int sub_size[], Format fmt, Type type) throw(ErrorException) {
+void Texture::write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level) throw(ErrorException) {
 	GLenum error;
 	bind();
 	
 	if(_dim == 1) {
-		glTexSubImage1D(GL_TEXTURE_1D, 0, offset[0], sub_size[0], (GLuint)fmt, (GLuint)type, data);
+		glTexSubImage1D(GL_TEXTURE_1D, level, offset[0], size[0], (GLuint)fmt, (GLuint)type, data);
 	} else if(_dim == 2) {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, offset[0], offset[1], sub_size[0], sub_size[1], (GLuint)fmt, (GLuint)type, data);
+		glTexSubImage2D(GL_TEXTURE_2D, level, offset[0], offset[1], size[0], size[1], (GLuint)fmt, (GLuint)type, data);
 	} else if(_dim == 3) {
-		glTexSubImage3D(GL_TEXTURE_3D, 0, offset[0], offset[1], offset[2], sub_size[0], sub_size[1], sub_size[2], (GLuint)fmt, (GLuint)type, data);
+		glTexSubImage3D(GL_TEXTURE_3D, level, offset[0], offset[1], offset[2], size[0], size[1], size[2], (GLuint)fmt, (GLuint)type, data);
 	}
 	
 	error = glGetError();
@@ -96,10 +94,10 @@ GLuint Texture::id() const {
 int Texture::dim() const {
 	return _dim;
 }
-const int *Texture::bounds() const {
-	return _bounds;
+const int *Texture::size() const {
+	return _size;
 }
 Texture::InternalFormat Texture::internal_format() const {
-	return _in_format;
+	return _format;
 }
 

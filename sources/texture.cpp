@@ -36,8 +36,6 @@ void Texture::unbind(int dim) {
 }
 
 void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) throw(ErrorException) {
-	GLenum error;
-	
 	_dim = dim;
 	bind();
 	
@@ -60,13 +58,12 @@ void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) th
 		glTexImage3D(GL_TEXTURE_3D, level, (GLuint)ifmt, size[0], size[1], size[2], 0, (GLenum)RGBA, (GLenum)UBYTE, NULL);
 	}
 	
-	error = glGetError();
+	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
 		throw ErrorException(error);
 }
 
 void Texture::write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level) throw(ErrorException) {
-	GLenum error;
 	bind();
 	
 	if(_dim == 1) {
@@ -77,7 +74,7 @@ void Texture::write(const void *data, const int offset[], const int size[], Form
 		glTexSubImage3D(GL_TEXTURE_3D, level, offset[0], offset[1], offset[2], size[0], size[1], size[2], (GLuint)fmt, (GLuint)type, data);
 	}
 	
-	error = glGetError();
+	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
 		throw ErrorException(error);
 }

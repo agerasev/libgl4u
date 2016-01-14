@@ -205,7 +205,7 @@ void Program::_loadUniform(const UniformVariable &var) {
 	}
 }
 
-void Program::evaluate() {
+void Program::evaluate() throw(ErrorException) {
 	enable();
 	
 	for(const auto &p : _uniforms) {
@@ -215,7 +215,8 @@ void Program::evaluate() {
 	
 	for(const auto &p : _attribs) {
 		Variable var = p.second;
-		glEnableVertexAttribArray(var.id);
+		if(var.id != -1)
+			glEnableVertexAttribArray(var.id);
 	}
 	
 	for(const auto &p : _attribs) {
@@ -247,10 +248,15 @@ void Program::evaluate() {
 	
 	for(const auto &p : _attribs) {
 		AttribVariable var = p.second;
-		glDisableVertexAttribArray(var.id);
+		if(var.id != -1)
+			glDisableVertexAttribArray(var.id);
 	}
 	
 	disable();
+	
+	GLenum error = glGetError();
+	if(error != GL_NO_ERROR)
+		throw ErrorException(error);
 }
 
 void Program::setAttribute(const std::string &name, VertexBuffer *buf) {

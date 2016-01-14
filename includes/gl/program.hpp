@@ -72,7 +72,7 @@ private:
 	void _loadUniform(const UniformVariable &var);
 	
 public:
-	void evaluate();
+	void evaluate() throw(ErrorException);
 	
 	void setAttribute(const std::string &name, VertexBuffer *buf);
 	

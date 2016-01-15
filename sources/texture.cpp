@@ -58,6 +58,11 @@ void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) th
 		glTexImage3D(GL_TEXTURE_3D, level, (GLuint)ifmt, size[0], size[1], size[2], 0, (GLenum)RGBA, (GLenum)UBYTE, NULL);
 	}
 	
+	if(max_lod < level) {
+		max_lod = level;
+		glTexParameteri(target(), GL_TEXTURE_MAX_LEVEL, max_lod);
+	}
+	
 	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
 		throw ErrorException(error);
@@ -79,10 +84,10 @@ void Texture::write(const void *data, const int offset[], const int size[], Form
 		throw ErrorException(error);
 }
 
-void Texture::setInterpolation(Interpolation intp) const {
+void Texture::setInterpolation(Interpolation min, Interpolation mag) const {
 	bind();
-	glTexParameteri(target(), GL_TEXTURE_MAG_FILTER, (GLuint)intp);
-	glTexParameteri(target(), GL_TEXTURE_MIN_FILTER, (GLuint)intp);
+	glTexParameteri(target(), GL_TEXTURE_MIN_FILTER, (GLuint)min);
+	glTexParameteri(target(), GL_TEXTURE_MAG_FILTER, (GLuint)mag);
 }
 
 GLuint Texture::id() const {

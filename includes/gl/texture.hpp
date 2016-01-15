@@ -72,7 +72,11 @@ public:
 	
 	enum Interpolation {
 		LINEAR  = GL_LINEAR,
-		NEAREST = GL_NEAREST
+		NEAREST = GL_NEAREST,
+		LINEAR_MIPMAP_LINEAR   = GL_LINEAR_MIPMAP_LINEAR,
+		NEAREST_MIPMAP_LINEAR  = GL_NEAREST_MIPMAP_LINEAR,
+		LINEAR_MIPMAP_NEAREST  = GL_LINEAR_MIPMAP_NEAREST,
+		NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST
 	};
 
 private:
@@ -80,6 +84,7 @@ private:
 	int _size[3] = {0, 0, 0};
 	InternalFormat _format = RGBA8;
 	int _dim = 2;
+	int max_lod = 0;
 	
 	static GLuint target(int dim);
 	GLuint target() const;
@@ -95,7 +100,7 @@ public:
 	void init(int dim, const int size[], InternalFormat ifmt, int level = 0) throw(ErrorException);
 	void write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level = 0) throw(ErrorException);
 	
-	void setInterpolation(Interpolation intp) const;
+	void setInterpolation(Interpolation min, Interpolation mag) const;
 
 	GLuint id() const;
 	int dim() const;

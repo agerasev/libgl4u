@@ -16,10 +16,6 @@ void VertexBuffer::unbind() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void VertexBuffer::draw() {
-	glDrawArrays(GL_TRIANGLES, 0, _size);
-}
-
 GLuint VertexBuffer::id() const {
 	return _id;
 }

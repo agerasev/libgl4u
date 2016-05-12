@@ -31,8 +31,6 @@ public:
 			throw ErrorException(error);
 	}
 	
-	void draw();
-	
 	GLuint id() const;
 	long size() const;
 	Type type();

@@ -72,7 +72,7 @@ private:
 	void _loadUniform(const UniformVariable &var);
 	
 public:
-	void evaluate() throw(ErrorException);
+	void evaluate(GLenum mode, int first, int count) throw(ErrorException);
 	
 	void setAttribute(const std::string &name, VertexBuffer *buf);
 	

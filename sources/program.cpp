@@ -205,7 +205,7 @@ void Program::_loadUniform(const UniformVariable &var) {
 	}
 }
 
-void Program::evaluate() throw(ErrorException) {
+void Program::evaluate(GLenum mode, int first, int count) throw(ErrorException) {
 	enable();
 	
 	for(const auto &p : _uniforms) {
@@ -238,13 +238,7 @@ void Program::evaluate() throw(ErrorException) {
 		}
 	}
 	
-	for(const auto &p : _attribs) {
-		AttribVariable var = p.second;
-		VertexBuffer *buffer = var.buffer;
-		if(buffer != nullptr) {
-			buffer->draw();
-		}
-	}
+	glDrawArrays(mode, first, count);
 	
 	for(const auto &p : _attribs) {
 		AttribVariable var = p.second;

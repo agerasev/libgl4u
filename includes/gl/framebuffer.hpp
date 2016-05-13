@@ -16,12 +16,12 @@ public:
 	FrameBuffer() throw(Exception);
 	virtual ~FrameBuffer();
 	
-	void setSize(int width, int height) throw(Exception);
+	void init(Texture::InternalFormat ifmt, int width, int height) throw(Exception);
 	
 	void bind();
 	static void unbind();
 	
 	GLuint id() const;
-	const Texture *getTexture() const;
+	Texture *getTexture();
 };
 }

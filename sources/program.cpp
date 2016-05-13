@@ -202,6 +202,8 @@ void Program::_loadUniform(const UniformVariable &var) {
 			break;
 		}
 		break;
+	default:
+		break;
 	}
 }
 
@@ -230,6 +232,8 @@ void Program::evaluate(GLenum mode, int first, int count) throw(ErrorException) 
 				break;
 			case INT:
 				glt = GL_INT;
+				break;
+			default:
 				break;
 			}
 			buffer->bind();

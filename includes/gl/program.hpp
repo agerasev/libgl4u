@@ -110,6 +110,8 @@ public:
 		case FLOAT:
 			memcpy(var.fdata, data, sizeof(float)*len);
 			break;
+		default:
+			break;
 		}
 	}
 	

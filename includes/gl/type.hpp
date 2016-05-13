@@ -6,8 +6,12 @@
 
 namespace gl {
 enum Type {
-	INT,
-	FLOAT
+	BYTE   = GL_BYTE,
+	UBYTE  = GL_UNSIGNED_BYTE,
+	SHORT  = GL_SHORT,
+	USHORT = GL_UNSIGNED_SHORT,
+	INT    = GL_INT,
+	FLOAT  = GL_FLOAT
 };
 /*
 template <typename T>

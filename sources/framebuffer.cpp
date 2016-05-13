@@ -9,15 +9,14 @@ FrameBuffer::~FrameBuffer() {
 	glDeleteFramebuffers(1, &_id);
 }
 
-void FrameBuffer::setSize(int width, int height) throw(Exception) {
+void FrameBuffer::init(Texture::InternalFormat ifmt, int width, int height) throw(Exception) {
 	_width = width;
 	_height = height;
 	
 	bind();
 	
 	int s[2] = {width, height};
-	_tex.init(2, s, Texture::RGBA32F);
-	_tex.setInterpolation(Texture::NEAREST, Texture::NEAREST);
+	_tex.init(2, s, ifmt);
 	
 	if(GLEW_VERSION_3_2)
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _tex.id(), 0);
@@ -31,6 +30,8 @@ void FrameBuffer::setSize(int width, int height) throw(Exception) {
 	
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		throw Exception("FrameBuffer create error");
+	
+	unbind();
 }
 
 void FrameBuffer::bind() {
@@ -44,7 +45,7 @@ void FrameBuffer::unbind() {
 GLuint FrameBuffer::id() const {
 	return _id;
 }
-const Texture *FrameBuffer::getTexture() const {
+Texture *FrameBuffer::getTexture() {
 	return &_tex;
 }
 

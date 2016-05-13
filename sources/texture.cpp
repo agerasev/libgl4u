@@ -63,6 +63,8 @@ void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) th
 		glTexParameteri(target(), GL_TEXTURE_MAX_LEVEL, max_lod);
 	}
 	
+	setInterpolation(Interpolation::NEAREST, Interpolation::NEAREST);
+	
 	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
 		throw ErrorException(error);
@@ -84,7 +86,7 @@ void Texture::write(const void *data, const int offset[], const int size[], Form
 		throw ErrorException(error);
 }
 
-void Texture::setInterpolation(Interpolation min, Interpolation mag) const {
+void Texture::setInterpolation(Interpolation min, Interpolation mag) {
 	bind();
 	glTexParameteri(target(), GL_TEXTURE_MIN_FILTER, (GLuint)min);
 	glTexParameteri(target(), GL_TEXTURE_MAG_FILTER, (GLuint)mag);

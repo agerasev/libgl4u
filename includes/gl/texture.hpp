@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 
 #include <gl/exception.hpp>
+#include <gl/type.hpp>
 
 namespace gl {
 class Texture {
@@ -13,17 +14,6 @@ public:
 		RGB  = GL_RGB,
 		RGBA = GL_RGBA
 	};
-	
-	enum Type {
-		BYTE   = GL_BYTE,
-		UBYTE  = GL_UNSIGNED_BYTE,
-		SHORT  = GL_SHORT,
-		USHORT = GL_UNSIGNED_SHORT,
-		INT    = GL_INT,
-		UINT   = GL_UNSIGNED_INT,
-		FLOAT  = GL_FLOAT
-	};
-	
 	enum InternalFormat {
 		R8    = GL_R8,
 		R8I   = GL_R8I,
@@ -100,7 +90,7 @@ public:
 	void init(int dim, const int size[], InternalFormat ifmt, int level = 0) throw(ErrorException);
 	void write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level = 0) throw(ErrorException);
 	
-	void setInterpolation(Interpolation min, Interpolation mag) const;
+	void setInterpolation(Interpolation min, Interpolation mag);
 
 	GLuint id() const;
 	int dim() const;

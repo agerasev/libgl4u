@@ -7,6 +7,7 @@ if(${WIN32})
 endif()
 
 include_directories(includes)
+include_directories(c-includer)
 
 set(SOURCE 
 	sources/exception.cpp

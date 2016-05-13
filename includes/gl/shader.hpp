@@ -24,16 +24,18 @@ private:
 	std::string _name = "";
 	std::list<Variable> _attribs, _uniforms;
 	
+	void *inc = nullptr;
+	void free_inc();
+	
 public:
 	Shader(Shader::Type type);
 	~Shader();
 	
 	void loadSource(char *source, long size);
-	void loadSourceFromFile(const std::string &filename) throw(FileNotFoundException);
+	void loadSourceFromFile(const std::string &filename, const std::string &incdir="") throw(FileNotFoundException);
 	
 private:
-	/* returned array of chars must be deleted */
-	char *_getCompilationLog();
+	std::string _getCompilationLog();
 	
 public:
 	void compile() throw(Exception);

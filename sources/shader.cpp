@@ -1,39 +1,51 @@
 #include <gl/shader.hpp>
 
-#include <gl/filereader.hpp>
-
 #include <regex>
 
+#include "includer.hpp"
+
 using namespace gl;
+
+void Shader::free_inc() {
+	if(inc != nullptr) {
+		delete static_cast<includer*>(inc);
+		inc = nullptr;
+	}
+}
 
 Shader::Shader(Shader::Type type) {
 	_type = type;
 	_id = glCreateShader((GLuint)type);
 }
 Shader::~Shader() {
+	free_inc();
 	glDeleteShader(_id);
 }
 
 void Shader::loadSource(char *source, long size) {
+	free_inc();
 	glShaderSource(_id, 1, &source, nullptr);
 	_findVariables(source, size);
 }
-void Shader::loadSourceFromFile(const std::string &filename) throw(FileNotFoundException) {
-	FileReader fr(filename);
-	_name = filename;
-	loadSource(fr.getData(), fr.getSize());
+void Shader::loadSourceFromFile(const std::string &filename, const std::string &incdir) throw(FileNotFoundException) {
+	free_inc();
+	includer *_inc = new includer(filename, incdir);
+	loadSource(const_cast<char*>(_inc->get_source().c_str()), _inc->get_source().size());
+	inc = static_cast<void*>(_inc);
 }
 
 
 /* returned array of chars must be deleted */
-char *Shader::_getCompilationLog() {
+std::string Shader::_getCompilationLog() {
 	int len = 0;
 	int chars_written = 0;
-	char *message = nullptr;
 	glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &len);
+	std::string message("");
 	if(len > 1) {
-		message = new char[len];
-		glGetShaderInfoLog(_id, len, &chars_written, message);
+		char *data = new char[len];
+		glGetShaderInfoLog(_id, len, &chars_written, data);
+		message = std::string(data);
+		delete[] data;
 	}
 	return message;
 }
@@ -41,10 +53,12 @@ char *Shader::_getCompilationLog() {
 
 void Shader::compile() throw(Exception) {
 	glCompileShader(_id);
-	char *msg = _getCompilationLog();
-	if(msg != nullptr) {
-		fprintf(stderr, "Shader '%s' compile log:\n%s\n", _name.c_str(), msg);
-		delete[] msg;
+	std::string msg = _getCompilationLog();
+	if(msg.size() > 0) {
+		if(inc != nullptr) {
+			msg = static_cast<includer*>(inc)->restore_location(msg);
+		}
+		fprintf(stderr, "Shader '%s' compile log:\n%s\n", _name.c_str(), msg.c_str());
 	}
 	
 	GLint st;

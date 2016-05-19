@@ -17,6 +17,7 @@ public:
 	virtual ~FrameBuffer();
 	
 	void init(Texture::InternalFormat ifmt, int width, int height) throw(Exception);
+	void init(int dim, Texture::InternalFormat ifmt, const int size[]) throw(Exception);
 	
 	void bind();
 	static void unbind();

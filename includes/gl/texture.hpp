@@ -77,12 +77,12 @@ private:
 	int max_lod = 0;
 	
 	static GLuint target(int dim);
-	GLuint target() const;
 	
 public:
 	Texture();
 	~Texture();
 	
+	GLuint target() const;
 	void bind() const;
 	void unbind() const;
 	static void unbind(int dim);

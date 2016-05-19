@@ -12,7 +12,11 @@ public:
 		RED  = GL_RED,
 		RG   = GL_RG,
 		RGB  = GL_RGB,
-		RGBA = GL_RGBA
+		RGBA = GL_RGBA,
+		RED_INT  = GL_RED_INTEGER,
+		RG_INT   = GL_RG_INTEGER,
+		RGB_INT  = GL_RGB_INTEGER,
+		RGBA_INT = GL_RGBA_INTEGER
 	};
 	enum InternalFormat {
 		R8    = GL_R8,
@@ -89,6 +93,7 @@ public:
 	
 	void init(int dim, const int size[], InternalFormat ifmt, int level = 0) throw(ErrorException);
 	void write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level = 0) throw(ErrorException);
+	void read(void *data, Format fmt, Type type, int size = 0, int level = 0) throw(ErrorException);
 	
 	void setInterpolation(Interpolation min, Interpolation mag);
 
@@ -96,5 +101,7 @@ public:
 	int dim() const;
 	const int *size() const;
 	Texture::InternalFormat internal_format() const;
+	
+	static std::pair<Format, gl::Type> split_itype(InternalFormat ifmt);
 };
 }

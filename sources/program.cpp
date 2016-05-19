@@ -58,7 +58,7 @@ std::string Program::name() const {
 void Program::_parseType(const Shader::Variable &src_var, Variable &dst_var) {
 	std::smatch match;
 	std::regex vec_expr("^([^0123456789]*)([1234567890]*)$");
-	std::regex smp_expr("^sampler([1234567890])D$");
+	std::regex smp_expr("^[ui]?sampler([1234567890])D$");
 	if(std::regex_search(src_var.type, match, vec_expr)) {
 		std::string dim_str(match[2]);
 		dst_var.dim = dim_str.length() < 1 ? 1 : std::stoi(dim_str);

@@ -11,6 +11,7 @@ enum Type {
 	SHORT  = GL_SHORT,
 	USHORT = GL_UNSIGNED_SHORT,
 	INT    = GL_INT,
+	UINT   = GL_UNSIGNED_INT,
 	FLOAT  = GL_FLOAT
 };
 /*

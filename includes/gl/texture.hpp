@@ -80,6 +80,10 @@ private:
 	int _dim = 2;
 	int max_lod = 0;
 	
+	bool own = false;
+	void _gen_tex();
+	void _del_tex();
+	
 	static GLuint target(int dim);
 	
 public:
@@ -94,6 +98,8 @@ public:
 	void init(int dim, const int size[], InternalFormat ifmt, int level = 0) throw(ErrorException);
 	void write(const void *data, const int offset[], const int size[], Format fmt, Type type, int level = 0) throw(ErrorException);
 	void read(void *data, Format fmt, Type type, int size = 0, int level = 0) throw(ErrorException);
+	
+	void wrap(GLuint id, int dim, const int size[], InternalFormat ifmt);
 	
 	void setInterpolation(Interpolation min, Interpolation mag);
 

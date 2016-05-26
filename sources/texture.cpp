@@ -1,7 +1,20 @@
 #include <gl/texture.hpp>
 
 using namespace gl;
-	
+
+void Texture::_gen_tex() {
+	_del_tex();
+	glGenTextures(1, &_id);
+	own = true;
+}
+
+void Texture::_del_tex() {
+	if(own) {
+		glDeleteTextures(1, &_id);
+		own = false;
+	}
+}
+
 GLuint Texture::target(int dim) {
 	static const GLuint trg[3] = {
 	GL_TEXTURE_1D,
@@ -16,11 +29,11 @@ GLuint Texture::target() const {
 }
 
 Texture::Texture() {
-	glGenTextures(1, &_id);
+	
 }
 
 Texture::~Texture() {
-	glDeleteTextures(1, &_id);
+	_del_tex();
 }
 
 void Texture::bind() const {
@@ -36,6 +49,9 @@ void Texture::unbind(int dim) {
 }
 
 void Texture::init(int dim, const int size[], InternalFormat ifmt, int level) throw(ErrorException) {
+	_del_tex();
+	_gen_tex();
+	
 	_dim = dim;
 	bind();
 	
@@ -99,6 +115,18 @@ void Texture::read(void *data, Texture::Format fmt, Type type, int size, int lev
 	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
 		throw ErrorException(error);
+}
+
+void Texture::wrap(GLuint id, int dim, const int size[], InternalFormat ifmt) {
+	_del_tex();
+	
+	_id = id;
+	_dim = dim;
+	for(int i = 0; i < dim; ++i) {
+		_size[i] = size[i];
+	}
+	
+	_format = ifmt;
 }
 
 void Texture::setInterpolation(Interpolation min, Interpolation mag) {

@@ -29,8 +29,8 @@ void Shader::loadSource(char *source, long size) {
 }
 void Shader::loadSourceFromFile(const std::string &filename, const std::string &incdir) throw(FileNotFoundException) {
 	free_inc();
-	includer *_inc = new includer(filename, incdir);
-	loadSource(const_cast<char*>(_inc->get_source().c_str()), _inc->get_source().size());
+	includer *_inc = new includer(filename, std::list<std::string>({incdir}));
+	loadSource(const_cast<char*>(_inc->data().c_str()), _inc->data().size());
 	inc = static_cast<void*>(_inc);
 }
 
@@ -56,7 +56,26 @@ void Shader::compile() throw(Exception) {
 	std::string msg = _getCompilationLog();
 	if(msg.size() > 0) {
 		if(inc != nullptr) {
-			msg = static_cast<includer*>(inc)->restore_location(msg);
+			includer *_inc = static_cast<includer*>(inc);
+			std::string result;
+			std::string string(msg);
+			// some of GLSL output formats
+			std::regex expr("(^|\n)[a-zA-Z:\\(\\) ]*(\\d+)[:\\(\\) ]+(\\d+)[:\\)]*"); 
+			std::smatch match;
+			while(std::regex_search(string,match,expr)) {
+				int gpos = std::stoi(std::string(match[3]));
+				std::string name;
+				int lpos;
+				if(_inc->locate(gpos, name, lpos)) {
+					result += match.prefix().str() + std::string(match[1]) + name + ": " + std::string(match[2]) + ":" + std::to_string(lpos);
+				} else {
+					fprintf(stderr, "includer: cannot locate line %d\n", gpos);
+					result += match.prefix().str() + std::string(match[0]);
+				}
+				string = match.suffix().str();
+			}
+			result += string;
+			msg = result;
 		}
 		fprintf(stderr, "Shader '%s' compile log:\n%s\n", _name.c_str(), msg.c_str());
 	}

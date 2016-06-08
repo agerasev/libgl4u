@@ -24,7 +24,7 @@ Shader::~Shader() {
 
 void Shader::loadSource(char *source, long size) {
 	free_inc();
-	glShaderSource(_id, 1, &source, nullptr);
+	glShaderSource(_id, 1, (const GLchar**) &source, nullptr);
 	_findVariables(source, size);
 }
 void Shader::loadSourceFromFile(const std::string &filename, const std::string &incdir) throw(FileNotFoundException) {

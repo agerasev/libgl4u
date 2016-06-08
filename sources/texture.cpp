@@ -106,11 +106,15 @@ void Texture::write(const void *data, const int offset[], const int size[], Form
 void Texture::read(void *data, Texture::Format fmt, Type type, int size, int level) throw(ErrorException) {
 	bind();
 	
+	/*
 	if(size != 0) {
 		glGetnTexImage(target(), level, (GLuint)fmt, (GLuint)type, size, data);
 	} else {
 		glGetTexImage(target(), level, (GLuint)fmt, (GLuint)type, data);
 	}
+	*/
+	
+	glGetTexImage(target(), level, (GLuint)fmt, (GLuint)type, data);
 	
 	GLenum error = glGetError();
 	if(error != GL_NO_ERROR)
